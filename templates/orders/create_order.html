@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Demande de mission | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Reservation client</p>
+    <h1>Demande de mission</h1>
+</section>
+<div class="card mission-summary">
+    <p><strong>Service:</strong> {{ provider_service.title }}</p>
+    <p><strong>Prestataire:</strong> {{ provider_service.provider.username }}</p>
+    <p><strong>Ville:</strong> {{ provider_service.city }}</p>
+</div>
+<form method="post" class="card form-grid form-shell">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Envoyer la demande</button>
+</form>
+{% endblock %}

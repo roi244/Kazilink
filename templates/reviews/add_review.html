@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Ajouter un avis | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Qualite et confiance</p>
+    <h1>Noter la mission #{{ mission.id }}</h1>
+</section>
+<form method="post" class="card form-grid form-shell">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Publier l'avis</button>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Paiement manuel | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Paiement manuel</p>
+    <h1>Mission #{{ order.id }}</h1>
+    <p class="muted">Montant a payer: <strong>{{ order.total_amount }} FCFA</strong></p>
+</section>
+
+<div class="card mission-summary">
+    <p><strong>Methode:</strong> {{ payment_label }}</p>
+    <p><strong>Numero/Compte:</strong> {{ payment_number }}</p>
+    <p><strong>Nom beneficiaire:</strong> {{ payment_holder }}</p>
+    <p class="muted">{{ payment_note }}</p>
+</div>
+
+<form method="post" class="card form-grid form-shell">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">J'ai paye - envoyer la preuve</button>
+</form>
+{% endblock %}

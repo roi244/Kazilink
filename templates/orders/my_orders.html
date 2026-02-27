@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Mes missions | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Pilotage des operations</p>
+    <h1>Mes missions</h1>
+</section>
+<section class="cards">
+    {% for order in orders %}
+        <article class="card mission-card">
+            <div class="service-card-head">
+                <h3>Mission #{{ order.id }}</h3>
+                <span class="chip">{{ order.get_status_display }}</span>
+            </div>
+            <p><strong>Service:</strong> {{ order.provider_service.title }}</p>
+            <p><strong>Ville:</strong> {{ order.city }}</p>
+            <p><strong>Montant:</strong> {{ order.total_amount }} FCFA</p>
+            <p><strong>Commission KaziLink:</strong> {{ order.commission_amount }} FCFA</p>
+            <p><strong>Paiement:</strong> {{ order.get_payment_status_display }} ({{ order.payment_provider|default:'-' }})</p>
+            {% if order.payment_reference %}
+                <p class="muted"><strong>Reference:</strong> {{ order.payment_reference }}</p>
+            {% endif %}
+            {% if order.paid_at %}
+                <p class="muted"><strong>Paye le:</strong> {{ order.paid_at|date:'d/m/Y H:i' }}</p>
+            {% endif %}
+            <p class="muted">Creee le {{ order.created_at|date:'d/m/Y H:i' }}</p>
+            <div class="row gap">
+                {% if user.id == order.client_id and order.payment_status != 'paid' %}
+                    {% if stripe_ready %}
+                        <a class="btn" href="{% url 'orders:start_checkout' order.id %}">Payer en ligne</a>
+                    {% endif %}
+                    {% if manual_payment_enabled %}
+                        <a class="btn btn-secondary" href="{% url 'orders:manual_payment' order.id %}">Paiement manuel</a>
+                    {% endif %}
+                {% endif %}
+                {% if user.id == order.provider_service.provider_id and order.payment_status == 'requires_action' and order.payment_provider == 'manual' %}
+                    <a class="btn" href="{% url 'orders:confirm_manual_payment' order.id %}">Valider paiement</a>
+                {% endif %}
+                {% if user.id == order.provider_service.provider_id and order.status == 'pending' %}
+                    <a class="btn" href="{% url 'orders:update_status' order.id 'accepted' %}">Accepter</a>
+                {% endif %}
+                {% if user.id == order.provider_service.provider_id and order.status == 'accepted' %}
+                    <a class="btn" href="{% url 'orders:update_status' order.id 'completed' %}">Terminer</a>
+                {% endif %}
+                {% if user.id == order.client_id and order.status != 'completed' %}
+                    <a class="btn btn-secondary" href="{% url 'orders:update_status' order.id 'cancelled' %}">Annuler</a>
+                {% endif %}
+                {% if user.id == order.client_id and order.status == 'completed' and not order.has_review %}
+                    <a class="btn btn-ghost" href="{% url 'reviews:add_review' order.id %}">Laisser un avis</a>
+                {% endif %}
+            </div>
+        </article>
+    {% empty %}
+        <div class="card empty-state"><p>Aucune mission pour le moment.</p></div>
+    {% endfor %}
+</section>
+{% endblock %}

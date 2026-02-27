@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Publier un service | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Espace prestataire</p>
+    <h1>Publier un service</h1>
+    <p class="muted">Une fiche claire augmente les demandes et le taux de conversion client.</p>
+</section>
+<form method="post" class="card form-grid form-shell">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Publier</button>
+</form>
+{% endblock %}

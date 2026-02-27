@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}KaziLink - Missions locales, prestataires verifies{% endblock %}
+{% block content %}
+<section class="hero-block">
+    <div>
+        <p class="eyebrow">Marketplace de services locaux</p>
+        <h1>Trouve un prestataire fiable en quelques minutes.</h1>
+        <p class="hero-copy">KaziLink connecte clients et professionnels verifies pour des interventions rapides, bien notees et suivies de bout en bout.</p>
+        <div class="hero-cta-row">
+            {% if user.is_authenticated and user.profile.role == 'provider' %}
+                <a class="btn" href="{% url 'services:publish_service' %}">Publier mon service</a>
+            {% elif user.is_authenticated and user.profile.role == 'client' %}
+                <a class="btn" href="#market">Trouver un prestataire</a>
+            {% else %}
+                <a class="btn" href="{% url 'accounts:signup' %}">Creer un compte</a>
+            {% endif %}
+            <a class="btn btn-secondary" href="#market">Explorer le marketplace</a>
+        </div>
+    </div>
+    <div class="hero-kpis">
+        <article class="kpi-card">
+            <p class="kpi-value">48h</p>
+            <p class="kpi-label">Delai moyen de prise en charge</p>
+        </article>
+        <article class="kpi-card">
+            <p class="kpi-value">4.8/5</p>
+            <p class="kpi-label">Satisfaction moyenne client</p>
+        </article>
+        <article class="kpi-card">
+            <p class="kpi-value">10%</p>
+            <p class="kpi-label">Commission KaziLink claire et fixe</p>
+        </article>
+    </div>
+</section>
+
+<section id="market" class="card search-panel">
+    <h2>Recherche intelligente</h2>
+    <form method="get" class="search-grid">
+        <input type="text" name="q" placeholder="Service ou prestataire" value="{{ request.GET.q }}">
+        <input type="text" name="city" placeholder="Ville" value="{{ request.GET.city }}">
+        <select name="category">
+            <option value="">Toutes categories</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn">Rechercher</button>
+    </form>
+</section>
+
+<section class="cards">
+    {% for service in services %}
+        <article class="card service-card">
+            <div class="service-card-head">
+                <h3>{{ service.title }}</h3>
+                <span class="chip">{{ service.category.name }}</span>
+            </div>
+            <p class="muted"><strong>Prestataire:</strong> {{ service.provider.username }} {% if service.provider.profile.is_verified %}<span class="verified">Verifie</span>{% endif %}</p>
+            <p class="muted"><strong>Ville:</strong> {{ service.city }}</p>
+            <p class="price">{{ service.base_price }} FCFA</p>
+            <p>{{ service.description|truncatechars:130 }}</p>
+            <div class="row gap">
+                {% if user.is_authenticated and user.profile.role == 'client' %}
+                    <a class="btn" href="{% url 'orders:create_order' service.id %}">Demander une mission</a>
+                {% endif %}
+                {% if service.whatsapp_url %}
+                    <a class="btn btn-secondary" href="{{ service.whatsapp_url }}" target="_blank" rel="noopener">WhatsApp</a>
+                {% endif %}
+                <a class="btn btn-ghost" href="{% url 'reviews:provider_reviews' service.provider.id %}">Voir avis</a>
+            </div>
+        </article>
+    {% empty %}
+        <div class="card empty-state">
+            <p>Aucun service trouve pour le moment. Lance une recherche plus large par ville ou categorie.</p>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

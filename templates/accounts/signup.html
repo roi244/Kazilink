@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Inscription | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Onboarding rapide</p>
+    <h1>Creer un compte</h1>
+    <p class="muted">Demarre en tant que client ou prestataire et commence a recevoir des missions.</p>
+</section>
+<form method="post" class="card form-grid form-shell">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">S'inscrire</button>
+</form>
+{% endblock %}
