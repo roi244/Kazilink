@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: kazilink
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "0"
+      - key: ALLOWED_HOSTS
+        value: kazilink.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://kazilink.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kazilink-db
+          property: connectionString
+
+databases:
+  - name: kazilink-db
+    plan: free
