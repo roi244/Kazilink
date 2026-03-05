@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Inscription | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Onboarding rapide</p>
+    <h1>Creer un compte</h1>
+    <p class="muted">Demarre en tant que client ou prestataire et commence a recevoir des missions.</p>
+</section>
+<form method="post" class="card form-grid form-shell" id="signup-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <p>{{ form.username.label_tag }} {{ form.username }} {{ form.username.errors }}</p>
+    <p>{{ form.email.label_tag }} {{ form.email }} {{ form.email.errors }}</p>
+    <p>{{ form.role.label_tag }} {{ form.role }} {{ form.role.errors }}</p>
+    <p>{{ form.phone.label_tag }} {{ form.phone }} {{ form.phone.errors }}</p>
+    <p>{{ form.city.label_tag }} {{ form.city }} {{ form.city.errors }}</p>
+    <p>{{ form.whatsapp_number.label_tag }} {{ form.whatsapp_number }} {{ form.whatsapp_number.errors }}</p>
+
+    <div id="provider-fields">
+        <p>{{ form.profession.label_tag }} {{ form.profession }} {{ form.profession.errors }}</p>
+        <p>{{ form.bio.label_tag }} {{ form.bio }} {{ form.bio.errors }}</p>
+    </div>
+
+    <p>{{ form.password1.label_tag }} {{ form.password1 }} {{ form.password1.errors }}</p>
+    <p>{{ form.password2.label_tag }} {{ form.password2 }} {{ form.password2.errors }}</p>
+
+    <button type="submit" class="btn">S'inscrire</button>
+</form>
+
+<script>
+(function () {
+    const roleField = document.getElementById('id_role');
+    const providerFields = document.getElementById('provider-fields');
+
+    function toggleProviderFields() {
+        if (!roleField || !providerFields) return;
+        providerFields.style.display = roleField.value === 'provider' ? 'block' : 'none';
+    }
+
+    if (roleField) {
+        roleField.addEventListener('change', toggleProviderFields);
+        toggleProviderFields();
+    }
+})();
+</script>
+{% endblock %}

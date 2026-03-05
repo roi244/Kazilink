@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Avis prestataire | KaziLink{% endblock %}
+{% block content %}
+<section class="section-head">
+    <p class="eyebrow">Preuves sociales</p>
+    <h1>Avis prestataire</h1>
+</section>
+<section class="cards">
+    {% for review in reviews %}
+        <article class="card mission-card">
+            <div class="service-card-head">
+                <h3>{{ review.client.username }}</h3>
+                <span class="chip">{{ review.rating }}/5</span>
+            </div>
+            <p>{{ review.comment }}</p>
+            <p class="muted">{{ review.created_at|date:'d/m/Y H:i' }}</p>
+        </article>
+    {% empty %}
+        <div class="card empty-state"><p>Aucun avis pour ce prestataire.</p></div>
+    {% endfor %}
+</section>
+{% endblock %}
