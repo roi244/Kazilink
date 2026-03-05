@@ -7,10 +7,9 @@ from django.views.decorators.http import require_POST
 
 from accounts.models import UserProfile
 
+from .currency import get_supported_currencies
 from .forms import ProviderServiceForm, ServiceSearchForm
 from .models import ProviderService, ServiceCategory
-
-SUPPORTED_CURRENCIES = {'FCFA', 'EUR'}
 
 
 def home(request):
@@ -44,7 +43,7 @@ def home(request):
 @require_POST
 def set_currency(request):
     currency = request.POST.get('currency', 'FCFA').upper()
-    if currency in SUPPORTED_CURRENCIES:
+    if currency in get_supported_currencies():
         request.session['currency'] = currency
 
     next_url = request.POST.get('next') or request.META.get('HTTP_REFERER') or reverse('services:home')

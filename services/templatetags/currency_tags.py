@@ -1,30 +1,34 @@
 from decimal import Decimal, ROUND_HALF_UP
 
-from django.conf import settings
 from django import template
 
-register = template.Library()
+from services.currency import get_currency_rates, get_supported_currencies
 
-SUPPORTED_CURRENCIES = ('FCFA', 'EUR')
+register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
 def money(context, amount):
     request = context.get('request')
-    selected_currency = 'FCFA'
+    supported = get_supported_currencies()
+    rates = get_currency_rates()
 
+    selected_currency = 'FCFA'
     if request is not None:
         selected_currency = request.session.get('currency', 'FCFA').upper()
 
-    if selected_currency not in SUPPORTED_CURRENCIES:
+    if selected_currency not in supported:
         selected_currency = 'FCFA'
 
-    value = Decimal(str(amount or 0))
+    value_fcfa = Decimal(str(amount or 0))
 
-    if selected_currency == 'EUR':
-        rate = Decimal(str(getattr(settings, 'CURRENCY_RATE_EUR', '655.957')))
-        converted = (value / rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-        return f"{converted:,.2f} EUR".replace(',', ' ')
+    if selected_currency == 'FCFA':
+        fcfa_value = value_fcfa.quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+        return f"{fcfa_value:,.0f} FCFA".replace(',', ' ')
 
-    fcfa_value = value.quantize(Decimal('1'), rounding=ROUND_HALF_UP)
-    return f"{fcfa_value:,.0f} FCFA".replace(',', ' ')
+    rate = rates.get(selected_currency)
+    if not rate or rate <= 0:
+        rate = rates.get('FCFA', Decimal('1'))
+
+    converted = (value_fcfa / rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    return f"{converted:,.2f} {selected_currency}".replace(',', ' ')
