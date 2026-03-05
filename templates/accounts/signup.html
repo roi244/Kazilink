@@ -17,7 +17,7 @@
     <p>{{ form.city.label_tag }} {{ form.city }} {{ form.city.errors }}</p>
     <p>{{ form.whatsapp_number.label_tag }} {{ form.whatsapp_number }} {{ form.whatsapp_number.errors }}</p>
 
-    <div id="provider-fields">
+    <div id="provider-fields" hidden>
         <p>{{ form.profession.label_tag }} {{ form.profession }} {{ form.profession.errors }}</p>
         <p>{{ form.bio.label_tag }} {{ form.bio }} {{ form.bio.errors }}</p>
     </div>
@@ -32,28 +32,23 @@
 (function () {
     const roleField = document.getElementById('id_role');
     const providerFields = document.getElementById('provider-fields');
-    const providerInputs = providerFields
-        ? providerFields.querySelectorAll('input, textarea, select')
-        : [];
+    if (!roleField || !providerFields) return;
+
+    const providerInputs = providerFields.querySelectorAll('input, textarea, select');
 
     function toggleProviderFields() {
-        if (!roleField || !providerFields) return;
+        const selectedRole = String(roleField.value || '').trim().toLowerCase();
+        const isProvider = selectedRole === 'provider';
 
-        const isProvider = roleField.value === 'provider';
-        providerFields.style.display = isProvider ? 'block' : 'none';
-
+        providerFields.hidden = !isProvider;
         providerInputs.forEach((input) => {
             input.disabled = !isProvider;
-            if (!isProvider) {
-                input.value = '';
-            }
+            if (!isProvider) input.value = '';
         });
     }
 
-    if (roleField) {
-        roleField.addEventListener('change', toggleProviderFields);
-        toggleProviderFields();
-    }
+    roleField.addEventListener('change', toggleProviderFields);
+    toggleProviderFields();
 })();
 </script>
 {% endblock %}
