@@ -32,10 +32,22 @@
 (function () {
     const roleField = document.getElementById('id_role');
     const providerFields = document.getElementById('provider-fields');
+    const providerInputs = providerFields
+        ? providerFields.querySelectorAll('input, textarea, select')
+        : [];
 
     function toggleProviderFields() {
         if (!roleField || !providerFields) return;
-        providerFields.style.display = roleField.value === 'provider' ? 'block' : 'none';
+
+        const isProvider = roleField.value === 'provider';
+        providerFields.style.display = isProvider ? 'block' : 'none';
+
+        providerInputs.forEach((input) => {
+            input.disabled = !isProvider;
+            if (!isProvider) {
+                input.value = '';
+            }
+        });
     }
 
     if (roleField) {
